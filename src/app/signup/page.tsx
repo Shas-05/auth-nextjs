@@ -1,6 +1,6 @@
 "use client";
 import Link from "next/link";
-import React, { useEffect } from "react";  
+import React, { use, useEffect } from "react";  
 import {useRouter} from "next/navigation";
 import {axios} from "axios";
 
@@ -18,7 +18,9 @@ export default function SignUpPage() {
   } 
 
   useEffect(() => {
-    
+    if(user.email.length > 0 && user.password.length > 0 && user.username.length > 0){
+      setButtonDisabled(false);
+    }
   }, [user]);
 
   return (
