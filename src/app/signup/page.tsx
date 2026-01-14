@@ -1,8 +1,10 @@
 "use client";
 import Link from "next/link";
-import React, { use, useEffect } from "react";  
-import {useRouter} from "next/navigation";
-import {axios} from "axios";
+import React, { use, useEffect } from "react";
+import { useRouter } from "next/navigation";
+import axios from "axios";
+import { set } from "mongoose";
+import toast from "react-hot-toast";
 
 export default function SignUpPage() {
   const router = useRouter();
@@ -10,16 +12,35 @@ export default function SignUpPage() {
   const [user, setUser] = React.useState({
     email: "",
     password: "",
-    username:"",
+    username: "",
   });
 
   const [buttonDisabled, setButtonDisabled] = React.useState(false);
-  const onSignup = async () => {// this method talks to the database
-  } 
-
+  const [loading, setLoading] = React.useState(false);
+  const onSignup = async () => {
+    // this method talks to the database
+    try {
+      setLoading(true);
+      const response = await axios.post("/api/user/signup", user);
+      console.log("Signup success", response.data);
+      toast.success("Signup Successful");
+      router.push("/login");
+    } catch (error: any) {
+      console.log("Signup failed", error.message);
+      toast.error(error.message);
+    } finally {
+      setLoading(false);
+    }
+  };
   useEffect(() => {
-    if(user.email.length > 0 && user.password.length > 0 && user.username.length > 0){
+    if (
+      user.email.length > 0 &&
+      user.password.length > 0 &&
+      user.username.length > 0
+    ) {
       setButtonDisabled(false);
+    } else {
+      setButtonDisabled(true);
     }
   }, [user]);
 
@@ -27,7 +48,7 @@ export default function SignUpPage() {
     <div className="flex flex-col items-center justify-center min-h-screen py-2">
       <div className="flex flex-col items-center justify-center border border-gray-300 rounded-xl p-6">
         <h1 className="mb-2 text-center text-3xl font-bold text-white-800">
-          Sign Up
+          {loading ? "Processing..." : "Signup"}
         </h1>
         <hr />
         <label
@@ -63,10 +84,16 @@ export default function SignUpPage() {
           onChange={(e) => setUser({ ...user, password: e.target.value })}
           placeholder="password"
         />
-        <button onClick={onSignup} className="mt-4 rounded-lg bg-blue-500 px-4 py-2 text-sm font-medium text-white hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-200">
-          Sign Up
+        <button
+          onClick={onSignup}
+          className="mt-4 rounded-lg bg-blue-500 px-4 py-2 text-sm font-medium text-white hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-200"
+        >
+          {buttonDisabled ? "No Signup" : "Signup"}
         </button>
-        <Link href="/login" className="mt-4 text-sm text-blue-500 hover:underline">
+        <Link
+          href="/login"
+          className="mt-4 text-sm text-blue-500 hover:underline"
+        >
           Already have an account? Login
         </Link>
       </div>
