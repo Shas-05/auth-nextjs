@@ -53,7 +53,6 @@ export default function SignUpPage() {
         <hr />
         <label
           htmlFor="username"
-          className="mb-1 block text-sm font-1xl text-white-700"
         >
           Username
         </label>
